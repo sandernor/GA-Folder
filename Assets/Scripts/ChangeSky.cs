@@ -53,5 +53,8 @@ public class ChangeSky : MonoBehaviour
         ms = slider2.value;
         msNumber.text = ms.ToString();
         wZone.windMain = ms;
+        //rain.forceOverLifetime.x = -ms;
+        Physics.gravity = new Vector3 (-ms , -9.81f, 0);
+        rain.startRotation3D = new Vector3 (0, 0, (-4.5f * ms) / 57f);
     }
 }

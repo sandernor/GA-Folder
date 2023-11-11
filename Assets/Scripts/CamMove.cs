@@ -29,7 +29,6 @@ public class CamMovement : MonoBehaviour
         x = Input.GetAxis("Horizontal") * Time.deltaTime * speed;
         z = Input.GetAxis("Vertical") * Time.deltaTime * speed;
         y = Input.GetAxis("Jump") * Time.deltaTime * speed;
-        transform.Translate(x, y, z);
 
         camX = Input.GetAxis("Mouse X") * Time.deltaTime * sens;
         camY = Input.GetAxis("Mouse Y") * Time.deltaTime * sens;
