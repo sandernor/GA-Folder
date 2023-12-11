@@ -21,16 +21,23 @@ public class Lake : MonoBehaviour
     //int threadsY = 8;
     //int threadsZ = 1;
 
-    int width = 100;
-    int height = 100;
+    int width = 10;
+    int height = 10;
 
     Vector3[] vertices;
     Color[] colors;
     int[] triangles;
-
     private vertice[] points;
 
-    // Start is called before the first frame update
+    // sinewave stuff
+    private float a;    // waveheight
+    private float w;    // 2 / wavelength   -   essentially wavelength
+    private float t;    // time
+    private float u;    // 2 / wavelength * speed   -   essentially speed
+    private int n;      // number of waves to sum   -   making up 1 more realistic wave
+
+    float[] A;
+    float[] W;
 
     public void RanColGPU()
     {
@@ -79,6 +86,18 @@ public class Lake : MonoBehaviour
 
         cubesBuffer.Dispose();
     }
+
+    public float SumSinesTest(Vector3 pos)
+    {
+        float x = 0;
+
+        for (int i = 0; i < n; i++)
+        {
+            x += A[i] * Mathf.Sin(1 * W[i] * (t + pos.x/* + pos.z + 1*/) * u);
+        }
+
+        return x * 1f;
+    }
     private void Awake()
     {
         mesh = GetComponent<MeshFilter>().mesh;
@@ -94,13 +113,17 @@ public class Lake : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                vertice vertex = new vertice();
-                vertex.position = new Vector3(i, 250, j);
-                vertex.color = Color.yellow;
+                //vertice vertex = new vertice();
+                //vertex.position = new Vector3(i, 250, j);
+                //vertex.color = Color.yellow;
 
-                points[k] = vertex;
+                //points[k] = vertex;
+
+                vertices[k] = new Vector3(i, 250, j);
 
                 k++;
+
+
             }
         }
 
@@ -125,8 +148,20 @@ public class Lake : MonoBehaviour
             triangles[i * 6 + 3] = i + k + 1;
             triangles[i * 6 + 4] = width + i + 1 + k;
             triangles[i * 6 + 5] = width + i + k;
+        }
 
-            Debug.Log(i);
+        a = 2;
+        w = 4 / 2;
+        u = 0.2f * w;
+        n = 4;
+
+        A = new float[n];
+        W = new float[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            A[i] = Random.Range(1, a);
+            W[i] = A[i];
         }
 
     }
@@ -142,7 +177,7 @@ public class Lake : MonoBehaviour
 
         //Graphics.Blit(waterTexture, waterTexture);
 
-        RanColGPU();
+        //RanColGPU();
 
         mesh.Clear();
         mesh.vertices = vertices;
@@ -154,8 +189,17 @@ public class Lake : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        t += Time.deltaTime;
+
+        for(int i = 0; i < vertices.Length; i++)
+        {
+            vertices[i].y = /*vertices[i].y*/ + SumSinesTest(vertices[i]);
+        }
+
+        mesh.Clear();
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
     }
 }
