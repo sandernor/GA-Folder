@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public struct Cube
+public struct vertice
 {
     public Vector3 position;
     public Color color;
@@ -17,39 +17,64 @@ public class Lake : MonoBehaviour
     private Mesh mesh;
     //public RenderTexture waterTexture;
 
-    int threadsX = 8;
-    int threadsY = 8;
-    int threadsZ = 1;
+    //int threadsX = 8;
+    //int threadsY = 8;
+    //int threadsZ = 1;
 
     int width = 10;
     int height = 10;
 
     Vector3[] vertices;
+    Color[] colors;
     int[] triangles;
 
-    private Cube[] cubes;
+    private vertice[] points;
 
     // Start is called before the first frame update
 
     public void RanColGPU()
     {
+        //int colorSize = sizeof(float) * 4;
+        //int vector3Size = sizeof(float) * 3;
+        //int totalSize = colorSize + vector3Size;
+
+        //ComputeBuffer cubesBuffer = new ComputeBuffer(cubes.Length, totalSize);
+        //cubesBuffer.SetData(cubes);
+
+        //waterShader.SetBuffer(0, "cubes", cubesBuffer);
+        //waterShader.SetFloat("resolution", cubes.Length);
+        //waterShader.Dispatch(0, cubes.Length / 10, 1, 1);
+
+        //cubesBuffer.GetData(cubes);
+
+        //for (int i = 0; i < cubes.Length; i++)
+        //{
+        //    GameObject instCube = Instantiate(daCube, cubes[i].position, Quaternion.identity);
+        //    instCube.GetComponent<MeshRenderer>().material.SetColor("_Color", cubes[i].color);
+        //}
+
+        //cubesBuffer.Dispose();
+
         int colorSize = sizeof(float) * 4;
         int vector3Size = sizeof(float) * 3;
         int totalSize = colorSize + vector3Size;
 
-        ComputeBuffer cubesBuffer = new ComputeBuffer(cubes.Length, totalSize);
-        cubesBuffer.SetData(cubes);
+        ComputeBuffer cubesBuffer = new ComputeBuffer(points.Length, totalSize);
+        cubesBuffer.SetData(points);
 
-        waterShader.SetBuffer(0, "cubes", cubesBuffer);
-        waterShader.SetFloat("resolution", cubes.Length);
-        waterShader.Dispatch(0, cubes.Length / 10, 1, 1);
+        waterShader.SetBuffer(0, "vertices", cubesBuffer);
+        waterShader.SetFloat("resolution", points.Length);
+        waterShader.Dispatch(0, points.Length / 10, 1, 1);
 
-        cubesBuffer.GetData(cubes);
+        cubesBuffer.GetData(points);
 
-        for (int i = 0; i < cubes.Length; i++)
+        for (int i = 0; i < points.Length; i++)
         {
-            GameObject instCube = Instantiate(daCube, cubes[i].position, Quaternion.identity);
-            instCube.GetComponent<MeshRenderer>().material.SetColor("_Color", cubes[i].color);
+            //GameObject instCube = Instantiate(daCube, points[i].position, Quaternion.identity);
+            //instCube.GetComponent<MeshRenderer>().material.SetColor("_Color", points[i].color);
+
+            vertices[i] = points[i].position;
+            colors[i] = points[i].color;
         }
 
         cubesBuffer.Dispose();
@@ -58,9 +83,10 @@ public class Lake : MonoBehaviour
     {
         mesh = GetComponent<MeshFilter>().mesh;
 
-        cubes = new Cube[width * height];
+        points = new vertice[width * height];
         vertices = new Vector3[width * height];
         triangles = new int[(width - 1) * (height - 1) * 6];
+        colors = new Color[width * height];
 
         int k = 0;
 
@@ -68,13 +94,11 @@ public class Lake : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                Cube cube = new Cube();
-                cube.position = new Vector3(i, 250, j);
-                cube.color = Color.yellow;
+                vertice vertex = new vertice();
+                vertex.position = new Vector3(i, 250, j);
+                vertex.color = Color.yellow;
 
-                cubes[k] = cube;
-                
-                vertices[k] = new Vector3(i, 235, j);
+                points[k] = vertex;
 
                 k++;
             }
@@ -123,6 +147,10 @@ public class Lake : MonoBehaviour
         mesh.Clear();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
+        mesh.colors = colors;
+        //mesh.uv = uvs;
+        //mesh.colors
+        //mesh.normals = CalcVNormals();
     }
 
     // Update is called once per frame
