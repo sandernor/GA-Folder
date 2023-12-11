@@ -21,8 +21,8 @@ public class Lake : MonoBehaviour
     //int threadsY = 8;
     //int threadsZ = 1;
 
-    int width = 10;
-    int height = 10;
+    int width = 100;
+    int height = 100;
 
     Vector3[] vertices;
     Color[] colors;
@@ -147,7 +147,7 @@ public class Lake : MonoBehaviour
         mesh.Clear();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
-        mesh.colors = colors;
+        //mesh.colors = colors;
         //mesh.uv = uvs;
         //mesh.colors
         //mesh.normals = CalcVNormals();
