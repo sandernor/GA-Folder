@@ -32,9 +32,9 @@ float y(float3 pos)
     float x = 0;
 
     x += a.x * sin((pos.z) * w.x + (t + pos.x) * u.x);
-    x += a.y * sin((pos.z) * w.y + (t + pos.x) * u.y);
+    x += a.y * sin((pos.x) * w.y + (t + pos.z) * u.y);
     x += a.z * sin((pos.z) * w.z + (t + pos.x) * u.z);
-    x += a.w * sin((pos.z) * w.w + (t + pos.x) * u.w);
+    x += a.w * sin((pos.x) * w.w + (t + pos.z) * u.w);
 
     return x * 1;
 }

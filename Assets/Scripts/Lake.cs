@@ -24,10 +24,15 @@ public class Lake : MonoBehaviour
     int width = 100;
     int height = 100;
 
+    float waterHeight = 120.6f;
+    float zMod = 200f;
+
     Vector3[] vertices;
     Color[] colors;
     int[] triangles;
     private vertice[] points;
+    Vector3[] allVerts;
+    int[] allTris;
 
     // sinewave stuff
     private float a;    // waveheight
@@ -48,6 +53,8 @@ public class Lake : MonoBehaviour
         vertices = new Vector3[width * height];
         triangles = new int[(width - 1) * (height - 1) * 6];
         colors = new Color[width * height];
+        allVerts = new Vector3[vertices.Length * 3];
+        allTris = new int[triangles.Length * 3];
 
         int k = 0;
 
@@ -56,7 +63,7 @@ public class Lake : MonoBehaviour
             for (int j = 0; j < height; j++)
             {
                 vertice vertex = new vertice();
-                vertex.position = new Vector3(i, 250, j);
+                vertex.position = new Vector3(i, waterHeight, j + zMod);
 
                 points[k] = vertex;
 
@@ -78,15 +85,45 @@ public class Lake : MonoBehaviour
                 k += 1;
             }
 
+            ////tri 1
+            //triangles[i * 6] = i + k;
+            //triangles[i * 6 + 1] = i + k + 1;
+            //triangles[i * 6 + 2] = width + i + k;
+
+            ////tri 2
+            //triangles[i * 6 + 3] = i + k + 1;
+            //triangles[i * 6 + 4] = width + i + 1 + k;
+            //triangles[i * 6 + 5] = width + i + k;
+
             //tri 1
-            triangles[i * 6] = i + k;
-            triangles[i * 6 + 1] = i + k + 1;
-            triangles[i * 6 + 2] = width + i + k;
+            allTris[i * 6] = i + k;
+            allTris[i * 6 + 1] = i + k + 1;
+            allTris[i * 6 + 2] = width + i + k;
 
             //tri 2
-            triangles[i * 6 + 3] = i + k + 1;
-            triangles[i * 6 + 4] = width + i + 1 + k;
-            triangles[i * 6 + 5] = width + i + k;
+            allTris[i * 6 + 3] = i + k + 1;
+            allTris[i * 6 + 4] = width + i + 1 + k;
+            allTris[i * 6 + 5] = width + i + k;
+
+            //tri 1
+            allTris[i * 6 + triangles.Length] = i + k + vertices.Length;
+            allTris[i * 6 + 1 + triangles.Length] = i + k + 1 + vertices.Length;
+            allTris[i * 6 + 2 + triangles.Length] = width + i + k + vertices.Length;
+
+            //tri 2
+            allTris[i * 6 + 3 + triangles.Length] = i + k + 1 + vertices.Length;
+            allTris[i * 6 + 4 + triangles.Length] = width + i + 1 + k + vertices.Length;
+            allTris[i * 6 + 5 + triangles.Length] = width + i + k + vertices.Length;
+
+            //tri 1
+            allTris[i * 6 + triangles.Length * 2] = i + k + (vertices.Length * 2);
+            allTris[i * 6 + 1 + triangles.Length * 2] = i + k + 1 + (vertices.Length * 2);
+            allTris[i * 6 + 2 + triangles.Length * 2] = width + i + k + (vertices.Length * 2);
+
+            //tri 2
+            allTris[i * 6 + 3 + triangles.Length * 2] = i + k + 1 + (vertices.Length * 2);
+            allTris[i * 6 + 4 + triangles.Length * 2] = width + i + 1 + k + (vertices.Length * 2);
+            allTris[i * 6 + 5 + triangles.Length * 2] = width + i + k + (vertices.Length * 2);
         }
 
         a = 2;
@@ -138,7 +175,9 @@ public class Lake : MonoBehaviour
 
         for (int i = 0; i < points.Length; i++)
         {
-            vertices[i] = points[i].position;
+            allVerts[i] = points[i].position;
+            allVerts[i + vertices.Length] = points[i].position + new Vector3(width - 1, 0, 0);
+            allVerts[i + (vertices.Length * 2)] = points[i].position + new Vector3((width - 1) * 2, 0, 0);
         }
 
         pointsBuffer.Dispose();
@@ -151,6 +190,10 @@ public class Lake : MonoBehaviour
         mesh.triangles = triangles;
         //mesh.uv = uvs;
         //mesh.normals = CalcVNormals();
+
+
+
+
     }
 
     // Update is called once per frame
@@ -160,8 +203,39 @@ public class Lake : MonoBehaviour
 
         RanColGPU();
 
+        //int p = 0;
+
+        //Vector3[] allVerts;
+        //int[] allTris;
+        //allVerts = new Vector3[vertices.Length * 3];
+        //allTris = new int[triangles.Length * 3];
+
+        //for (int i = 0; i < allVerts.Length; i++)
+        //{
+        //    if (i != 0 && i % vertices.Length == 0)
+        //    {
+        //        p += 1;
+        //    }
+        //    //Debug.Log(p);
+        //    allVerts[i] = vertices[i - (vertices.Length * p)];
+
+        //    allVerts[i] = allVerts[i] + new Vector3(p * height, 0, 0);
+        //}
+
+        //p = 0;
+
+        //for (int i = 0; i < allTris.Length; i++)
+        //{
+        //    if (i != 0 && i % triangles.Length == 0)
+        //    {
+        //        p += 1;
+        //    }
+        //    Debug.Log(p);
+        //    allTris[i] = triangles[i - (triangles.Length * p)] + triangles.Length * p;
+        //}
+
         mesh.Clear();
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
+        mesh.vertices = allVerts;
+        mesh.triangles = allTris;
     }
 }
