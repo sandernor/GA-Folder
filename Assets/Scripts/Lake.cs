@@ -7,7 +7,7 @@ using UnityEngine;
 public struct vertice
 {
     public Vector3 position;
-    public Color color;
+    //public Color color;
 }
 
 public class Lake : MonoBehaviour
@@ -21,8 +21,8 @@ public class Lake : MonoBehaviour
     //int threadsY = 8;
     //int threadsZ = 1;
 
-    int width = 10;
-    int height = 10;
+    int width = 100;
+    int height = 100;
 
     Vector3[] vertices;
     Color[] colors;
@@ -38,66 +38,8 @@ public class Lake : MonoBehaviour
 
     float[] A;
     float[] W;
+    float[] U;
 
-    public void RanColGPU()
-    {
-        //int colorSize = sizeof(float) * 4;
-        //int vector3Size = sizeof(float) * 3;
-        //int totalSize = colorSize + vector3Size;
-
-        //ComputeBuffer cubesBuffer = new ComputeBuffer(cubes.Length, totalSize);
-        //cubesBuffer.SetData(cubes);
-
-        //waterShader.SetBuffer(0, "cubes", cubesBuffer);
-        //waterShader.SetFloat("resolution", cubes.Length);
-        //waterShader.Dispatch(0, cubes.Length / 10, 1, 1);
-
-        //cubesBuffer.GetData(cubes);
-
-        //for (int i = 0; i < cubes.Length; i++)
-        //{
-        //    GameObject instCube = Instantiate(daCube, cubes[i].position, Quaternion.identity);
-        //    instCube.GetComponent<MeshRenderer>().material.SetColor("_Color", cubes[i].color);
-        //}
-
-        //cubesBuffer.Dispose();
-
-        int colorSize = sizeof(float) * 4;
-        int vector3Size = sizeof(float) * 3;
-        int totalSize = colorSize + vector3Size;
-
-        ComputeBuffer cubesBuffer = new ComputeBuffer(points.Length, totalSize);
-        cubesBuffer.SetData(points);
-
-        waterShader.SetBuffer(0, "vertices", cubesBuffer);
-        waterShader.SetFloat("resolution", points.Length);
-        waterShader.Dispatch(0, points.Length / 10, 1, 1);
-
-        cubesBuffer.GetData(points);
-
-        for (int i = 0; i < points.Length; i++)
-        {
-            //GameObject instCube = Instantiate(daCube, points[i].position, Quaternion.identity);
-            //instCube.GetComponent<MeshRenderer>().material.SetColor("_Color", points[i].color);
-
-            vertices[i] = points[i].position;
-            colors[i] = points[i].color;
-        }
-
-        cubesBuffer.Dispose();
-    }
-
-    public float SumSinesTest(Vector3 pos)
-    {
-        float x = 0;
-
-        for (int i = 0; i < n; i++)
-        {
-            x += A[i] * Mathf.Sin(1 * W[i] * (t + pos.x/* + pos.z + 1*/) * u);
-        }
-
-        return x * 1f;
-    }
     private void Awake()
     {
         mesh = GetComponent<MeshFilter>().mesh;
@@ -113,13 +55,10 @@ public class Lake : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                //vertice vertex = new vertice();
-                //vertex.position = new Vector3(i, 250, j);
-                //vertex.color = Color.yellow;
+                vertice vertex = new vertice();
+                vertex.position = new Vector3(i, 250, j);
 
-                //points[k] = vertex;
-
-                vertices[k] = new Vector3(i, 250, j);
+                points[k] = vertex;
 
                 k++;
 
@@ -151,40 +90,66 @@ public class Lake : MonoBehaviour
         }
 
         a = 2;
-        w = 4 / 2;
-        u = 0.2f * w;
+        w = 2f / 8f;
+        u = 5f * w;
         n = 4;
 
         A = new float[n];
         W = new float[n];
+        U = new float[n];
 
         for (int i = 0; i < n; i++)
         {
-            A[i] = Random.Range(1, a);
-            W[i] = A[i];
+            A[i] = Random.Range(a / 2, a) * (w / 100f);
+            W[i] = w;
+            //W[i] = A[i];
+            U[i] = Random.Range(u / 2, u);
+
+            //A[i] = a;
+            //W[i] = w;
+            //U[i] = u;
+        }
+    }
+
+    public void RanColGPU()
+    {
+        Vector4 a4v;
+        Vector4 w4v;
+        Vector4 u4v;
+        a4v = new Vector4(A[0], A[1], A[2], A[3]);
+        w4v = new Vector4(W[0], W[1], W[2], W[3]);
+        u4v = new Vector4(U[0], U[1], U[2], U[3]);
+
+        int vector3Size = sizeof(float) * 3;
+
+        int totalSize = vector3Size;
+
+        ComputeBuffer pointsBuffer = new ComputeBuffer(points.Length, totalSize);
+        pointsBuffer.SetData(points);
+
+        waterShader.SetBuffer(0, "vertices", pointsBuffer);
+        waterShader.SetVector("a", a4v);
+        waterShader.SetVector("w", w4v);
+        waterShader.SetVector("u", u4v);
+        waterShader.SetFloat("t", t);
+        waterShader.Dispatch(0, points.Length / 10, 1, 1);
+
+        pointsBuffer.GetData(points);
+
+        for (int i = 0; i < points.Length; i++)
+        {
+            vertices[i] = points[i].position;
         }
 
+        pointsBuffer.Dispose();
     }
+
     void Start()
     {
-        //waterTexture = new RenderTexture(256, 256, 24);
-        //waterTexture.enableRandomWrite = true;
-        //waterTexture.Create();
-
-        //waterShader.SetTexture(0, "Result", waterTexture);
-        //waterShader.SetFloat("Resolution", waterTexture.width);
-        //waterShader.Dispatch(0, waterTexture.width / threadsX, waterTexture.height / threadsY, threadsZ);
-
-        //Graphics.Blit(waterTexture, waterTexture);
-
-        //RanColGPU();
-
         mesh.Clear();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
-        //mesh.colors = colors;
         //mesh.uv = uvs;
-        //mesh.colors
         //mesh.normals = CalcVNormals();
     }
 
@@ -193,10 +158,7 @@ public class Lake : MonoBehaviour
     {
         t += Time.deltaTime;
 
-        for(int i = 0; i < vertices.Length; i++)
-        {
-            vertices[i].y = /*vertices[i].y*/ + SumSinesTest(vertices[i]);
-        }
+        RanColGPU();
 
         mesh.Clear();
         mesh.vertices = vertices;
