@@ -3,15 +3,39 @@
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
-RWTexture2D<float4> Result;
+//RWTexture2D<float4> Result;
 
-float Resolution;
+struct Cube
+{
+    float3 position;
+    float4 color;
+};
 
-[numthreads(8,8,1)]
+RWStructuredBuffer<Cube> cubes;
+
+float resolution;
+
+float rand(float2 co)
+{
+    return(frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453)) * 1;
+}
+
+//[numthreads(8,8,1)]
+[numthreads(10, 1, 1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
     // TODO: insert actual code here!
-    float x = id.x / Resolution;
-    float y = id.y / Resolution;
-    Result[id.xy] = float4(x, y, 0.0, 0.0);
+    float xPos = id.x / resolution;
+
+    Cube cube = cubes[id.x];
+
+    float height = rand(float2(xPos, cube.position.y));
+    cube.position.y = height + 250;
+
+    cube.color = float4(xPos, 0.0, 0.0, 1.0);
+
+    cubes[id.x] = cube;
+    //Result[id.xy] = float4(x, y, 0.0, 0.0);
 }
+
+
