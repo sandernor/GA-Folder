@@ -25,6 +25,7 @@ public class Lake : MonoBehaviour
     int height = 10;
 
     Vector3[] vertices;
+    int[] triangles;
 
     private Cube[] cubes;
 
@@ -58,7 +59,9 @@ public class Lake : MonoBehaviour
         mesh = GetComponent<MeshFilter>().mesh;
 
         cubes = new Cube[width * height];
-        //vertices = new Vector3[width * height];
+        vertices = new Vector3[width * height];
+        triangles = new int[(width - 1) * (height - 1) * 6];
+
         int k = 0;
 
         for (int i = 0; i < width; i++)
@@ -70,11 +73,37 @@ public class Lake : MonoBehaviour
                 cube.color = Color.yellow;
 
                 cubes[k] = cube;
-                //vertices[k] = new Vector3(i, 100, j);
+                
+                vertices[k] = new Vector3(i, 235, j);
+
                 k++;
             }
         }
 
+        // making indeces for triangles in mesh
+        // making to triangles at a time, so a quad
+        // therefore, 6 ints are calculated
+        k = 0;
+        for (int i = 0; i < width * (width - 2) + 1; i++)
+        {
+            // this is her to jump to the next line of vertices in the grid when getting to the edge
+            if (i + k == width * (k + 1) - 1)
+            {
+                k += 1;
+            }
+
+            //tri 1
+            triangles[i * 6] = i + k;
+            triangles[i * 6 + 1] = i + k + 1;
+            triangles[i * 6 + 2] = width + i + k;
+
+            //tri 2
+            triangles[i * 6 + 3] = i + k + 1;
+            triangles[i * 6 + 4] = width + i + 1 + k;
+            triangles[i * 6 + 5] = width + i + k;
+
+            Debug.Log(i);
+        }
 
     }
     void Start()
@@ -91,9 +120,9 @@ public class Lake : MonoBehaviour
 
         RanColGPU();
 
-        //mesh.Clear();
-        //mesh.vertices = vertices;
-        //mesh.triangles = triVerts;
+        mesh.Clear();
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
     }
 
     // Update is called once per frame
