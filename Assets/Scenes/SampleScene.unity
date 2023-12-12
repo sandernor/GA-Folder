@@ -193,6 +193,7 @@ MonoBehaviour:
   waterShader: {fileID: 7200000, guid: ceee5cc7814faa5459d5feafb021662f, type: 3}
   daCube: {fileID: 8050359676617581608, guid: 4d241558dc625734a9b55aa787b4fc1a, type: 3}
   player: {fileID: 0}
+  waterHeight: 120.6
 --- !u!4 &153621273
 Transform:
   m_ObjectHideFlags: 0
@@ -515,11 +516,16 @@ MonoBehaviour:
   mmNumber: {fileID: 1123995148}
   msNumber: {fileID: 2106117047}
   wZone: {fileID: 1118521549}
+  lake: {fileID: 153621271}
+  lakeScript: {fileID: 153621272}
+  lake2: {fileID: 377145831}
+  lakeScript2: {fileID: 0}
   sunny: 1
   dark: 0
   mm: 0
   ms: 0
   multi: 500
+  raining: 0
 --- !u!114 &273184197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -782,6 +788,7 @@ MonoBehaviour:
   waterShader: {fileID: 7200000, guid: ceee5cc7814faa5459d5feafb021662f, type: 3}
   daCube: {fileID: 0}
   player: {fileID: 0}
+  waterHeight: 120.6
 --- !u!4 &377145833
 Transform:
   m_ObjectHideFlags: 0

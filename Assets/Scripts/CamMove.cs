@@ -32,10 +32,10 @@ public class CamMovement : MonoBehaviour
 
     private void Awake()
     {
-        a = 2;
-        w = 2f / 10f;
-        u = 20f * w;
-        n = 4;
+        a = 2;          //for good water with no wind : 2
+        w = 2f / 10f;   //for good water with no wind : 2f / 10f
+        u = 20f * w;    //for good water with no wind : 20f * w
+        n = 4;          //always 4
 
         A = new float[n];
         W = new float[n];

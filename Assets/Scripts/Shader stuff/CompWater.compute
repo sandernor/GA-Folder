@@ -32,20 +32,20 @@ float y(float3 pos)
 {
     float x = 0;
 
-    x += (a.x * pow(e, sin((pos.z) * w.x + (t + pos.x) * u.x) - 1) * cos((pos.z) * w.x + (t + pos.x) * u.x));
-    x += (a.y * pow(e, sin((pos.x) * w.y + (t + pos.z) * u.y) - 1) * cos((pos.x) * w.y + (t + pos.z) * u.y));
-    x += (a.z * pow(e, sin((pos.z) * w.z + (t + pos.x) * u.z) - 1) * cos((pos.x) * w.z + (t + pos.x) * u.z));
-    x += (a.w * pow(e, sin((pos.x) * w.y + (t + pos.z) * u.w) - 1) * cos((pos.z) * w.w + (t + pos.z) * u.w));
+    //x += (a.x * pow(e, sin((pos.z) * w.x + (t + pos.x * 0.05) * u.x) - 1) * cos((pos.z) * w.x + (t + pos.x * 0.05) * u.x));
+    //x += (a.y * pow(e, sin((pos.x) * w.y + (t + pos.z * 0.05) * u.y) - 1) * cos((pos.x) * w.y + (t + pos.z * 0.05) * u.y));
+    //x += (a.z * pow(e, sin((pos.z) * w.z + (t + pos.x * 0.05) * u.z) - 1) * cos((pos.x) * w.z + (t + pos.x * 0.05) * u.z));
+    //x += (a.w * pow(e, sin((pos.x) * w.y + (t + pos.z * 0.05) * u.w) - 1) * cos((pos.z) * w.w + (t + pos.z * 0.05) * u.w));
 
-    //x += a.x * sin((pos.z) * w.x + (t + pos.x) * u.x);
-    //x += a.y * sin((pos.x) * w.y + (t + pos.z) * u.y);
-    //x += a.z * sin((pos.z) * w.z + (t + pos.x) * u.z);
-    //x += a.w * sin((pos.x) * w.w + (t + pos.z) * u.w);
+    x += a.x * sin((pos.z) * w.x + (t + pos.x * 0.05) * u.x);
+    x += a.y * sin((pos.x) * w.y + (t + pos.z * 0.05) * u.y);
+    x += a.z * sin((pos.z) * w.z + (t + pos.x * 0.05) * u.z);
+    x += a.w * sin((pos.x) * w.w + (t + pos.z * 0.05) * u.w);
 
-    //x += a.x * sin((pos.x) * w.y + (t + pos.z) * u.z);
-    //x += a.y * sin((pos.z) * w.z + (t + pos.x) * u.w);
-    //x += a.z * sin((pos.x) * w.w + (t + pos.z) * u.x);
-    //x += a.w * sin((pos.z) * w.x + (t + pos.x) * u.y);
+    x += a.x * sin((pos.x) * w.y + (t + pos.z * 0.05) * u.z);
+    x += a.y * sin((pos.z) * w.z + (t + pos.x * 0.05) * u.w);
+    x += a.z * sin((pos.x) * w.w + (t + pos.z * 0.05) * u.x);
+    x += a.w * sin((pos.z) * w.x + (t + pos.x * 0.05) * u.y);
 
     return x * 1;
 }
@@ -61,7 +61,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     //float height = rand(float2(xPos, vertex.position.y));
     float height = y(vertex.position);
-    vertex.position.y = vertex.position.y + height;
+    vertex.position.y = vertex.position.y + height + e;
 
     //vertex.color = float4(xPos, rand(float2(xPos, vertex.position.y)), rand(float2(xPos, vertex.position.y)), 1.0);
 

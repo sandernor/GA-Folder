@@ -27,7 +27,7 @@ public class Lake : MonoBehaviour
     int width = 100;
     int height = 100;
 
-    float waterHeight = 120.6f;
+    public float waterHeight = 120.6f;
     float zMod = 157f;
 
     Vector3[] vertices;
@@ -43,7 +43,7 @@ public class Lake : MonoBehaviour
     private float t;    // time
     private float u;    // 2 / wavelength * speed   -   essentially speed
     private int n;      // number of waves to sum   -   making up 1 more realistic wave
-    private float e = 2.71828f;
+    private float e = 0;
 
     float[] A;
     float[] W;
@@ -296,6 +296,11 @@ public class Lake : MonoBehaviour
         allVerts[width * height - width + (vertices.Length * 3)].y = allVerts[0].y;
 
         pointsBuffer.Dispose();
+    }
+
+    public void WaterHeight(float h)
+    {
+        e = h;
     }
 
     void Start()
