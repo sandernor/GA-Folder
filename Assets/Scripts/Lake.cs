@@ -14,7 +14,10 @@ public class Lake : MonoBehaviour
 {
     public ComputeShader waterShader;
     public GameObject daCube;
+    public GameObject player;
+    private CamMovement script;
     private Mesh mesh;
+
     //public RenderTexture waterTexture;
 
     //int threadsX = 8;
@@ -40,6 +43,7 @@ public class Lake : MonoBehaviour
     private float t;    // time
     private float u;    // 2 / wavelength * speed   -   essentially speed
     private int n;      // number of waves to sum   -   making up 1 more realistic wave
+    private float e = 2.71828f;
 
     float[] A;
     float[] W;
@@ -52,9 +56,11 @@ public class Lake : MonoBehaviour
         points = new vertice[width * height];
         vertices = new Vector3[width * height];
         triangles = new int[(width - 1) * (height - 1) * 6];
-        //colors = new Color[width * height];
         allVerts = new Vector3[vertices.Length * 4];
         allTris = new int[triangles.Length * 4];
+
+        player = GameObject.Find("Player");
+        script = player.GetComponent("CamMovement") as CamMovement;
 
         int k = 0;
 
@@ -95,8 +101,9 @@ public class Lake : MonoBehaviour
             //triangles[i * 6 + 4] = width + i + 1 + k;
             //triangles[i * 6 + 5] = width + i + k;
 
-            // this code is hard to read but very fast. i create 8 quadrants making the lake. here i make a quad for each quadrant each loop
+            // this code is hard to read but very fast. i create 4 quadrants making the lake. here i make a quad for each quadrant each loop
 
+            //quad 1
             //tri 1
             allTris[i * 6] = i + k;
             allTris[i * 6 + 1] = i + k + 1;
@@ -107,6 +114,7 @@ public class Lake : MonoBehaviour
             allTris[i * 6 + 4] = width + i + 1 + k;
             allTris[i * 6 + 5] = width + i + k;
 
+            //quad 2
             //tri 1
             allTris[i * 6 + triangles.Length] = i + k + vertices.Length;
             allTris[i * 6 + 1 + triangles.Length] = i + k + 1 + vertices.Length;
@@ -117,6 +125,7 @@ public class Lake : MonoBehaviour
             allTris[i * 6 + 4 + triangles.Length] = width + i + 1 + k + vertices.Length;
             allTris[i * 6 + 5 + triangles.Length] = width + i + k + vertices.Length;
 
+            //quad 3
             //tri 1
             allTris[i * 6 + triangles.Length * 2] = i + k + (vertices.Length * 2);
             allTris[i * 6 + 1 + triangles.Length * 2] = i + k + 1 + (vertices.Length * 2);
@@ -127,6 +136,7 @@ public class Lake : MonoBehaviour
             allTris[i * 6 + 4 + triangles.Length * 2] = width + i + 1 + k + (vertices.Length * 2);
             allTris[i * 6 + 5 + triangles.Length * 2] = width + i + k + (vertices.Length * 2);
 
+            //quad 4
             //tri 1
             allTris[i * 6 + triangles.Length * 3] = i + k + (vertices.Length * 3);
             allTris[i * 6 + 1 + triangles.Length * 3] = i + k + 1 + (vertices.Length * 3);
@@ -208,26 +218,7 @@ public class Lake : MonoBehaviour
             //allTris[i * 6 + 5 + triangles.Length * 10] = width + i + k + (vertices.Length * 10);
         }
 
-        a = 2;
-        w = 2f / 10f;
-        u = 5f * w;
-        n = 4;
 
-        A = new float[n];
-        W = new float[n];
-        U = new float[n];
-
-        for (int i = 0; i < n; i++)
-        {
-            A[i] = Random.Range(a / 2, a) * (w / 100f);
-            W[i] = w;
-            //W[i] = A[i];
-            U[i] = Random.Range(u / 2, u);
-
-            //A[i] = a;
-            //W[i] = w;
-            //U[i] = u;
-        }
     }
 
     public void RanColGPU()
@@ -251,6 +242,7 @@ public class Lake : MonoBehaviour
         waterShader.SetVector("w", w4v);
         waterShader.SetVector("u", u4v);
         waterShader.SetFloat("t", t);
+        waterShader.SetFloat("e", e);
         waterShader.Dispatch(0, points.Length / 10, 1, 1);
 
         pointsBuffer.GetData(points);
@@ -270,6 +262,39 @@ public class Lake : MonoBehaviour
             //allVerts[i + (vertices.Length * 10)] = points[i].position + new Vector3((width - 1) * 3, 0, (width - 1) * 2);
         }
 
+        for (int i = width * height - width; i < points.Length; i++)
+        {
+            allVerts[i].y = points[i - (width * height - width)].position.y;
+            allVerts[i + vertices.Length].y = points[i - (width * height - width)].position.y;
+            allVerts[i + (vertices.Length * 2)].y = points[i - (width * height - width)].position.y;
+            allVerts[i + (vertices.Length * 3)].y = points[i - (width * height - width)].position.y;
+        }
+
+        int o = width - 1;
+        for (int i = 0; i < points.Length; i += width)
+        {
+            //allVerts[i + width - 1].y = waterHeight;
+            //allVerts[i].y = waterHeight;
+            //allVerts[i + width - 1 + vertices.Length].y = waterHeight;
+            //allVerts[i + vertices.Length].y = waterHeight;
+            //allVerts[i + width - 1 + (vertices.Length * 2)].y = waterHeight;
+            //allVerts[i + (vertices.Length * 2)].y = waterHeight;
+            //allVerts[i + width - 1 + (vertices.Length * 3)].y = waterHeight;
+            //allVerts[i + (vertices.Length * 3)].y = waterHeight;
+
+            allVerts[i].y = points[o].position.y;
+            allVerts[i + vertices.Length].y = points[o].position.y;
+            allVerts[i + (vertices.Length * 2)].y = points[o].position.y;
+            allVerts[i + (vertices.Length * 3)].y = points[o].position.y;
+
+            o += width;
+        }
+
+        allVerts[width * height - width].y = allVerts[0].y;
+        allVerts[width * height - width + vertices.Length].y = allVerts[0].y;
+        allVerts[width * height - width + (vertices.Length * 2)].y = allVerts[0].y;
+        allVerts[width * height - width + (vertices.Length * 3)].y = allVerts[0].y;
+
         pointsBuffer.Dispose();
     }
 
@@ -281,7 +306,30 @@ public class Lake : MonoBehaviour
         //mesh.uv = uvs;
         //mesh.normals = CalcVNormals();
 
+        a = script.a;
+        w = script.w;
+        u = script.u;
+        n = script.n;
 
+        A = new float[n];
+        W = new float[n];
+        U = new float[n];
+
+        A = script.A;
+        W = script.W;
+        U = script.U;
+
+        //for (int i = 0; i < n; i++)
+        //{
+        //    A[i] = Random.Range(a / 2, a) * (w / 100f);
+        //    W[i] = w;
+        //    //W[i] = A[i];
+        //    U[i] = Random.Range(u / 2, u);
+
+        //    //A[i] = a;
+        //    //W[i] = w;
+        //    //U[i] = u;
+        //}
 
 
     }
@@ -289,7 +337,7 @@ public class Lake : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        t += Time.deltaTime;
+        t = script.time;
 
         RanColGPU();
 
@@ -327,5 +375,6 @@ public class Lake : MonoBehaviour
         mesh.Clear();
         mesh.vertices = allVerts;
         mesh.triangles = allTris;
+        mesh.RecalculateNormals();
     }
 }
