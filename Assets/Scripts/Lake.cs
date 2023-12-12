@@ -25,7 +25,7 @@ public class Lake : MonoBehaviour
     int height = 100;
 
     float waterHeight = 120.6f;
-    float zMod = 200f;
+    float zMod = 157f;
 
     Vector3[] vertices;
     Color[] colors;
@@ -52,9 +52,9 @@ public class Lake : MonoBehaviour
         points = new vertice[width * height];
         vertices = new Vector3[width * height];
         triangles = new int[(width - 1) * (height - 1) * 6];
-        colors = new Color[width * height];
-        allVerts = new Vector3[vertices.Length * 3];
-        allTris = new int[triangles.Length * 3];
+        //colors = new Color[width * height];
+        allVerts = new Vector3[vertices.Length * 4];
+        allTris = new int[triangles.Length * 4];
 
         int k = 0;
 
@@ -77,7 +77,7 @@ public class Lake : MonoBehaviour
         // making to triangles at a time, so a quad
         // therefore, 6 ints are calculated
         k = 0;
-        for (int i = 0; i < width * (width - 2) + 1; i++)
+        for (int i = 0; i < triangles.Length / 6; i++)
         {
             // this is her to jump to the next line of vertices in the grid when getting to the edge
             if (i + k == width * (k + 1) - 1)
@@ -94,6 +94,8 @@ public class Lake : MonoBehaviour
             //triangles[i * 6 + 3] = i + k + 1;
             //triangles[i * 6 + 4] = width + i + 1 + k;
             //triangles[i * 6 + 5] = width + i + k;
+
+            // this code is hard to read but very fast. i create 8 quadrants making the lake. here i make a quad for each quadrant each loop
 
             //tri 1
             allTris[i * 6] = i + k;
@@ -124,10 +126,90 @@ public class Lake : MonoBehaviour
             allTris[i * 6 + 3 + triangles.Length * 2] = i + k + 1 + (vertices.Length * 2);
             allTris[i * 6 + 4 + triangles.Length * 2] = width + i + 1 + k + (vertices.Length * 2);
             allTris[i * 6 + 5 + triangles.Length * 2] = width + i + k + (vertices.Length * 2);
+
+            //tri 1
+            allTris[i * 6 + triangles.Length * 3] = i + k + (vertices.Length * 3);
+            allTris[i * 6 + 1 + triangles.Length * 3] = i + k + 1 + (vertices.Length * 3);
+            allTris[i * 6 + 2 + triangles.Length * 3] = width + i + k + (vertices.Length * 3);
+
+            //tri 2
+            allTris[i * 6 + 3 + triangles.Length * 3] = i + k + 1 + (vertices.Length * 3);
+            allTris[i * 6 + 4 + triangles.Length * 3] = width + i + 1 + k + (vertices.Length * 3);
+            allTris[i * 6 + 5 + triangles.Length * 3] = width + i + k + (vertices.Length * 3);
+
+            ////tri 1
+            //allTris[i * 6 + triangles.Length * 4] = i + k + (vertices.Length * 4);
+            //allTris[i * 6 + 1 + triangles.Length * 4] = i + k + 1 + (vertices.Length * 4);
+            //allTris[i * 6 + 2 + triangles.Length * 4] = width + i + k + (vertices.Length * 4);
+
+            ////tri 2
+            //allTris[i * 6 + 3 + triangles.Length * 4] = i + k + 1 + (vertices.Length * 4);
+            //allTris[i * 6 + 4 + triangles.Length * 4] = width + i + 1 + k + (vertices.Length * 4);
+            //allTris[i * 6 + 5 + triangles.Length * 4] = width + i + k + (vertices.Length * 4);
+
+            ////tri 1
+            //allTris[i * 6 + triangles.Length * 5] = i + k + (vertices.Length * 5);
+            //allTris[i * 6 + 1 + triangles.Length * 5] = i + k + 1 + (vertices.Length * 5);
+            //allTris[i * 6 + 2 + triangles.Length * 5] = width + i + k + (vertices.Length * 5);
+
+            ////tri 2
+            //allTris[i * 6 + 3 + triangles.Length * 5] = i + k + 1 + (vertices.Length * 5);
+            //allTris[i * 6 + 4 + triangles.Length * 5] = width + i + 1 + k + (vertices.Length * 5);
+            //allTris[i * 6 + 5 + triangles.Length * 5] = width + i + k + (vertices.Length * 5);
+
+            ////tri 1
+            //allTris[i * 6 + triangles.Length * 6] = i + k + (vertices.Length * 6);
+            //allTris[i * 6 + 1 + triangles.Length * 6] = i + k + 1 + (vertices.Length * 6);
+            //allTris[i * 6 + 2 + triangles.Length * 6] = width + i + k + (vertices.Length * 6);
+
+            ////tri 2
+            //allTris[i * 6 + 3 + triangles.Length * 6] = i + k + 1 + (vertices.Length * 6);
+            //allTris[i * 6 + 4 + triangles.Length * 6] = width + i + 1 + k + (vertices.Length * 6);
+            //allTris[i * 6 + 5 + triangles.Length * 6] = width + i + k + (vertices.Length * 6);
+
+            ////tri 1
+            //allTris[i * 6 + triangles.Length * 7] = i + k + (vertices.Length * 7);
+            //allTris[i * 6 + 1 + triangles.Length * 7] = i + k + 1 + (vertices.Length * 7);
+            //allTris[i * 6 + 2 + triangles.Length * 7] = width + i + k + (vertices.Length * 7);
+
+            ////tri 2
+            //allTris[i * 6 + 3 + triangles.Length * 7] = i + k + 1 + (vertices.Length * 7);
+            //allTris[i * 6 + 4 + triangles.Length * 7] = width + i + 1 + k + (vertices.Length * 7);
+            //allTris[i * 6 + 5 + triangles.Length * 7] = width + i + k + (vertices.Length * 7);
+
+            ////tri 1
+            //allTris[i * 6 + triangles.Length * 8] = i + k + (vertices.Length * 8);
+            //allTris[i * 6 + 1 + triangles.Length * 8] = i + k + 1 + (vertices.Length * 8);
+            //allTris[i * 6 + 2 + triangles.Length * 8] = width + i + k + (vertices.Length * 8);
+
+            ////tri 2
+            //allTris[i * 6 + 3 + triangles.Length * 8] = i + k + 1 + (vertices.Length * 8);
+            //allTris[i * 6 + 4 + triangles.Length * 8] = width + i + 1 + k + (vertices.Length * 8);
+            //allTris[i * 6 + 5 + triangles.Length * 8] = width + i + k + (vertices.Length * 8);
+
+            ////tri 1
+            //allTris[i * 6 + triangles.Length * 9] = i + k + (vertices.Length * 9);
+            //allTris[i * 6 + 1 + triangles.Length * 9] = i + k + 1 + (vertices.Length * 9);
+            //allTris[i * 6 + 2 + triangles.Length * 9] = width + i + k + (vertices.Length * 9);
+
+            ////tri 2
+            //allTris[i * 6 + 3 + triangles.Length * 9] = i + k + 1 + (vertices.Length * 9);
+            //allTris[i * 6 + 4 + triangles.Length * 9] = width + i + 1 + k + (vertices.Length * 9);
+            //allTris[i * 6 + 5 + triangles.Length * 9] = width + i + k + (vertices.Length * 9);
+
+            ////tri 1
+            //allTris[i * 6 + triangles.Length * 10] = i + k + (vertices.Length * 10);
+            //allTris[i * 6 + 1 + triangles.Length * 10] = i + k + 1 + (vertices.Length * 10);
+            //allTris[i * 6 + 2 + triangles.Length * 10] = width + i + k + (vertices.Length * 10);
+
+            ////tri 2
+            //allTris[i * 6 + 3 + triangles.Length * 10] = i + k + 1 + (vertices.Length * 10);
+            //allTris[i * 6 + 4 + triangles.Length * 10] = width + i + 1 + k + (vertices.Length * 10);
+            //allTris[i * 6 + 5 + triangles.Length * 10] = width + i + k + (vertices.Length * 10);
         }
 
         a = 2;
-        w = 2f / 8f;
+        w = 2f / 10f;
         u = 5f * w;
         n = 4;
 
@@ -178,6 +260,14 @@ public class Lake : MonoBehaviour
             allVerts[i] = points[i].position;
             allVerts[i + vertices.Length] = points[i].position + new Vector3(width - 1, 0, 0);
             allVerts[i + (vertices.Length * 2)] = points[i].position + new Vector3((width - 1) * 2, 0, 0);
+            allVerts[i + (vertices.Length * 3)] = points[i].position + new Vector3((width - 1) * 3, 0, 0);
+            //allVerts[i + (vertices.Length * 4)] = points[i].position + new Vector3((width - 1) * 1, 0, width - 1);
+            //allVerts[i + (vertices.Length * 5)] = points[i].position + new Vector3((width - 1) * 2, 0, width - 1);
+            //allVerts[i + (vertices.Length * 6)] = points[i].position + new Vector3((width - 1) * 3, 0, 0);
+            //allVerts[i + (vertices.Length * 7)] = points[i].position + new Vector3((width - 1) * 3, 0, width - 1);
+            //allVerts[i + (vertices.Length * 8)] = points[i].position + new Vector3((width - 1), 0, (width - 1) * 2);
+            //allVerts[i + (vertices.Length * 9)] = points[i].position + new Vector3((width - 1) * 2, 0, (width - 1) * 2);
+            //allVerts[i + (vertices.Length * 10)] = points[i].position + new Vector3((width - 1) * 3, 0, (width - 1) * 2);
         }
 
         pointsBuffer.Dispose();
