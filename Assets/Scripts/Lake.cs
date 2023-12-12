@@ -29,7 +29,7 @@ public class Lake : MonoBehaviour
     int width = 100;
     int height = 100;
 
-    public float waterHeight = 120.6f;
+    public float waterHeight = 110.6f;
     float zMod = 157f;
 
     Vector3[] vertices;
