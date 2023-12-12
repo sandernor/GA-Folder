@@ -20,6 +20,10 @@ public class ChangeSky : MonoBehaviour
     public Lake lakeScript;
     public GameObject lake2;
     public Lake lakeScript2;
+    public GameObject windmill;
+    public Propeller windmillScript;
+    public GameObject light;
+    public HouseLight lightScript;
 
     public float sunny;
     public float dark;
@@ -34,6 +38,8 @@ public class ChangeSky : MonoBehaviour
         rain.enableEmission = false;
         lakeScript = lake.GetComponent("Lake") as Lake;
         lakeScript2 = lake2.GetComponent("Lake") as Lake;
+        windmillScript = windmill.GetComponent("Propeller") as Propeller;
+        lightScript = light.GetComponent("HouseLight") as HouseLight;
     }
 
     public void Sun()
@@ -67,20 +73,25 @@ public class ChangeSky : MonoBehaviour
         //rain.forceOverLifetime.x = -ms;
         Physics.gravity = new Vector3 (-ms , -9.81f, 0);
         rain.startRotation3D = new Vector3 (0, 0, (-4.5f * ms) / 57f);
+
+        windmillScript.speed = ms + 0.1f;
+
+        lightScript.i2 = ms / 3;
     }
 
     public void FixedUpdate()
     {
         if (raining)
         {
-            lakeScript.WaterHeight(mm * 0.01f);
-            lakeScript2.WaterHeight(mm * 0.01f);
+            lakeScript.WaterHeight(mm * 0.01f, raining);
+            lakeScript2.WaterHeight(mm * 0.01f, raining);
         }
         else
         {
-            lakeScript.WaterHeight(5 * (-0.01f));
-            lakeScript2.WaterHeight(5 * (-0.01f));
+            lakeScript.WaterHeight(5 * (-0.01f), raining);
+            lakeScript2.WaterHeight(5 * (-0.01f), raining);
         }
-            
+
+
     }
 }

@@ -17,6 +17,8 @@ public class Lake : MonoBehaviour
     public GameObject player;
     private CamMovement script;
     private Mesh mesh;
+    public GameObject house;
+    public HouseLight light;
 
     //public RenderTexture waterTexture;
 
@@ -52,6 +54,7 @@ public class Lake : MonoBehaviour
     private void Awake()
     {
         mesh = GetComponent<MeshFilter>().mesh;
+        light = house.GetComponent("HouseLight") as HouseLight;
 
         points = new vertice[width * height];
         vertices = new Vector3[width * height];
@@ -298,9 +301,14 @@ public class Lake : MonoBehaviour
         pointsBuffer.Dispose();
     }
 
-    public void WaterHeight(float h)
+    public void WaterHeight(float h, bool r)
     {
-        e = h;
+        if (r && allVerts[0].y < 123f)
+            e = h * 0.1f;
+        else if (!r && allVerts[0].y > 108.5f)
+            e = h * 0.1f;
+        else
+            e = 0;
     }
 
     void Start()
@@ -381,5 +389,7 @@ public class Lake : MonoBehaviour
         mesh.vertices = allVerts;
         mesh.triangles = allTris;
         mesh.RecalculateNormals();
+
+        light.i1 = (allVerts[0].y - 108.5f) * 0.25f;
     }
 }
